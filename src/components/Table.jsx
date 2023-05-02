@@ -1,10 +1,34 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Mycontext from '../contexts/Mycontext';
 
 function Table() {
   const { planets, loading } = useContext(Mycontext);
+  const [filteredPlanets, setFilteredPlanets] = useState(planets);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchChange = ({ target }) => {
+    setSearchTerm(target.value);
+  };
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = planets.filter((planet) => planet.name
+        .toLowerCase().includes(searchTerm.toLowerCase()));
+      setFilteredPlanets(filtered);
+    } else {
+      setFilteredPlanets(planets);
+    }
+  }, [planets, searchTerm]);
+
   return (
     <div>
+      <input
+        data-testid="name-filter"
+        type="text"
+        placeholder="Search by planet Name"
+        value={ searchTerm }
+        onChange={ handleSearchChange }
+      />
       <table>
         <thead>
           <tr>
@@ -24,7 +48,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          {!loading && planets.map((item) => (
+          {!loading && filteredPlanets.map((item) => (
             <tr key={ item.name }>
               <td>{item.name}</td>
               <td>{item.rotation_period}</td>
