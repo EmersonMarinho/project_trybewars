@@ -67,9 +67,14 @@ function Table() {
 
   const removeFilter = (filterToRemove) => {
     const updatedFilters = appliedFilters
-      .filter((filter) => filter !== filterToRemove);
+      .filter((filter) => filter.column !== filterToRemove.column
+      || filter.comparison !== filterToRemove.comparison
+      || filter.value !== filterToRemove.value);
     setAppliedFilters(updatedFilters);
-    setFilteredPlanets(applyFilters(updatedFilters));
+  };
+
+  const removeAllFilters = () => {
+    setAppliedFilters([]);
   };
 
   return (
@@ -79,6 +84,12 @@ function Table() {
           <FilterTag key={ index } filter={ filter } onRemove={ removeFilter } />
         ))}
       </div>
+      <button
+        onClick={ removeAllFilters }
+        data-testid="button-remove-filters"
+      >
+        Remover todas filtragens
+      </button>
       <select
         data-testid="column-filter"
         value={ columnFilter }

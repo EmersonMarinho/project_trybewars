@@ -1,10 +1,9 @@
-// FilterTag.js
 import React from 'react';
 import PropTypes from 'prop-types';
 
 function FilterTag({ filter, onRemove }) {
   return (
-    <button
+    <div
       style={ {
         display: 'inline-block',
         padding: '5px',
@@ -14,12 +13,13 @@ function FilterTag({ filter, onRemove }) {
         cursor: 'pointer',
         border: 'none',
       } }
-      onClick={ () => onRemove(filter) }
+      data-testid="filter"
     >
       {`${filter.column} ${filter.comparison} ${filter.value}`}
-      <span>&times;</span>
-
-    </button>
+      <button onClick={ () => onRemove(filter) }>
+        <span>&times;</span>
+      </button>
+    </div>
   );
 }
 
