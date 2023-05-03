@@ -25,10 +25,15 @@ function Table() {
           return planetValue === filterValue;
         }
         return true;
-      }));
-
+      }))
+      .filter((planet) => {
+        if (!searchTerm) {
+          return true;
+        }
+        return planet.name.toLowerCase().includes(searchTerm.toLowerCase());
+      });
     setFilteredPlanets(applyFilters(appliedFilters));
-  }, [appliedFilters, planets]);
+  }, [appliedFilters, planets, searchTerm]);
 
   const handleSearchChange = ({ target }) => {
     setSearchTerm(target.value);
@@ -64,8 +69,9 @@ function Table() {
     const updatedFilters = appliedFilters
       .filter((filter) => filter !== filterToRemove);
     setAppliedFilters(updatedFilters);
-    setFilteredPlanets((updatedFilters));
+    setFilteredPlanets(applyFilters(updatedFilters));
   };
+
   return (
     <div>
       <div>
@@ -78,11 +84,21 @@ function Table() {
         value={ columnFilter }
         onChange={ handleColumnFilterChange }
       >
-        <option value="population">population</option>
-        <option value="orbital_period">orbital_period</option>
-        <option value="diameter">diameter</option>
-        <option value="rotation_period">rotation_period</option>
-        <option value="surface_water">surface_water</option>
+        {!appliedFilters.some((filter) => filter.column === 'population') && (
+          <option value="population">population</option>
+        )}
+        {!appliedFilters.some((filter) => filter.column === 'orbital_period') && (
+          <option value="orbital_period">orbital_period</option>
+        )}
+        {!appliedFilters.some((filter) => filter.column === 'diameter') && (
+          <option value="diameter">diameter</option>
+        )}
+        {!appliedFilters.some((filter) => filter.column === 'rotation_period') && (
+          <option value="rotation_period">rotation_period</option>
+        )}
+        {!appliedFilters.some((filter) => filter.column === 'surface_water') && (
+          <option value="surface_water">surface_water</option>
+        )}
       </select>
 
       <select
@@ -156,6 +172,7 @@ function Table() {
         </tbody>
       </table>
     </div>
+
   );
 }
 
