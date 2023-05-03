@@ -11,6 +11,25 @@ function Table() {
   const [valueFilter, setValueFilter] = useState('0');
   const [appliedFilters, setAppliedFilters] = useState([]);
 
+  useEffect(() => {
+    const applyFilters = (updatedFilters) => planets
+      .filter((planet) => updatedFilters.every((filter) => {
+        const planetValue = parseFloat(planet[filter.column]);
+        const filterValue = parseFloat(filter.value);
+
+        if (filter.comparison === 'maior que') {
+          return planetValue > filterValue;
+        } if (filter.comparison === 'menor que') {
+          return planetValue < filterValue;
+        } if (filter.comparison === 'igual a') {
+          return planetValue === filterValue;
+        }
+        return true;
+      }));
+
+    setFilteredPlanets(applyFilters(appliedFilters));
+  }, [appliedFilters, planets]);
+
   const handleSearchChange = ({ target }) => {
     setSearchTerm(target.value);
   };
@@ -30,64 +49,23 @@ function Table() {
   const addFilter = ({ column, comparison, value }) => {
     if (!column || !comparison || !value) return;
 
-    const filterFunction = (planet) => {
-      const planetValue = parseFloat(planet[column]);
-      const filterValue = parseFloat(value);
-
-      if (comparison === 'maior que') {
-        return planetValue > filterValue;
-      } if (comparison === 'menor que') {
-        return planetValue < filterValue;
-      } if (comparison === 'igual a') {
-        return planetValue === filterValue;
-      }
-      return true;
-    };
-
-    const filtered = planets.filter(filterFunction);
-    setFilteredPlanets(filtered);
-
     const newFilter = { column, comparison, value };
     setAppliedFilters([...appliedFilters, newFilter]);
   };
 
   const handleApplyFilter = () => {
     addFilter({ column: columnFilter, comparison: comparisonFilter, value: valueFilter });
-    setColumnFilter('');
-    setComparisonFilter('');
-    setValueFilter('');
+    setColumnFilter('population');
+    setComparisonFilter('maior que');
+    setValueFilter('0');
   };
 
   const removeFilter = (filterToRemove) => {
-    const updatedFilters = appliedFilters.filter((filter) => filter !== filterToRemove);
+    const updatedFilters = appliedFilters
+      .filter((filter) => filter !== filterToRemove);
     setAppliedFilters(updatedFilters);
-    const filtered = planets.filter((planet) => updatedFilters.every((filter) => {
-      const planetValue = parseFloat(planet[filter.column]);
-      const filterValue = parseFloat(filter.value);
-
-      if (filter.comparison === 'maior que') {
-        return planetValue > filterValue;
-      } if (filter.comparison === 'menor que') {
-        return planetValue < filterValue;
-      } if (filter.comparison === 'igual a') {
-        return planetValue === filterValue;
-      }
-      return true;
-    }));
-
-    setFilteredPlanets(filtered);
+    setFilteredPlanets((updatedFilters));
   };
-
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = planets.filter((planet) => planet.name
-        .toLowerCase().includes(searchTerm.toLowerCase()));
-      setFilteredPlanets(filtered);
-    } else {
-      setFilteredPlanets(planets);
-    }
-  }, [planets, searchTerm]);
-
   return (
     <div>
       <div>
