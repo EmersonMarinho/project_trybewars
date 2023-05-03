@@ -5,6 +5,11 @@ import MyContext from './Mycontext';
 function Provider({ children }) {
   const [loading, setLoading] = useState(true);
   const [planets, setPlantes] = useState([]);
+  const [filters, setFilters] = useState([]);
+
+  const addFilter = (newFilter) => {
+    setFilters([...filters, newFilter]);
+  };
 
   useEffect(() => {
     fetch('https://swapi.dev/api/planets')
@@ -19,10 +24,8 @@ function Provider({ children }) {
     setLoading(false);
   }, []);
 
-  const VALUE = { loading, planets };
-
   return (
-    <MyContext.Provider value={ VALUE }>
+    <MyContext.Provider value={ { loading, planets, addFilter } }>
       { children }
     </MyContext.Provider>
   );
